@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="png/logo.png">
+<title>Truffled - Science</title>
+<meta name="title" content="Truffled - Interactive Learning Resources">
+<meta name="description" content="Truffled is an educational platform offering interactive activities, brain-training challenges, and creative learning tools for students.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://truffled.lol/">
+<meta property="og:title" content="Truffled - Interactive Learning Resources">
+<meta property="og:description" content="Explore engaging educational content, problem-solving challenges, and interactive tools designed to support learning.">
+<meta property="og:image" content="https://truffled.lol/png/logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://truffled.lol/">
+<meta name="twitter:title" content="Truffled - Interactive Learning Resources">
+<meta name="twitter:description" content="A safe and clean educational site offering interactive activities and learning-focused tools.">
+<meta name="twitter:image" content="https://truffled.lol/png/logo.png">
+<link rel="canonical" href="https://truffled.lol/">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/themes.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=WLTG1S4STB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'WLTG1S4STB');
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+#panicUrlInput {
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #1c383b;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  display: block;
+  background: transparent;
+  color: #fff;
+  outline: none;
+  width: 80%;
+}
+#panickeysettings button:last-of-type {
+  margin-left: 0;
+  display: block;
+}
+</style>
+</head>
+<body>
+<div class="navbar-right">
+  <a href="/"><img src="png/house-solid.svg" alt="h"></a>
+  <a href="g"><img src="png/gamepad-solid.svg" alt="g"></a>
+  <a href="t"><img src="png/tool.svg" alt="t"></a>
+  <a href="https://discord.gg/vVqY36mzvj"><img src="png/other.svg" alt="d"></a>
+  <a href="s"><img src="png/gear-solid.svg" alt="s"></a>
+</div>
+<div class="settings-container">
+  <!-- <section id="themesettings" class="settings-section">
+    <h2>themes</h2>
+    <p>customize your experience</p>
+    <div class="theme-selector-wrapper">
+      <label class="theme-selector-label" for="themeDropdown">Select Theme:</label>
+      <select id="themeDropdown" class="theme-dropdown">
+      </select>
+      <div class="theme-preview-box" id="themePreview"></div>
+    </div>
+  </section> -->
+  <section id="adsettings" class="settings-section">
+    <h2>ads</h2>
+    <div class="toggle-switch">
+      <label for="adsToggle">show ads:</label>
+      <input type="checkbox" id="adsToggle">
+    </div>
+    <p id="adsStatus" style="margin-top:5px;"></p>
+  </section>
+  <section id="abblank" class="settings-section">
+    <h2>about:blank</h2>
+    <button id="openblankbtn">open in about:blank</button>
+  </section>
+  <section id="panickeysettings" class="settings-section">
+    <h2>panic key</h2>
+    <p id="currentPanicKey">panic key:</p>
+    <p id="instruction">click any key to change</p>
+    <button onclick="changePanicKey()">change panic key</button>
+    <p id="currentPanicUrl">url:</p>
+    <p>enter your url link</p>
+    <input type="url" id="panicUrlInput" placeholder="https://www.google.com">
+    <button onclick="savePanicUrl()">set url</button>
+  </section>
+  <section id="datamanager" class="settings-section">
+    <h2>data saving</h2>
+    <p>save your data</p>
+    <button onclick="exportData('save')">export your data</button>
+    <button onclick="importData()">Import Data</button>
+    <button onclick="clearAllData()">Clear All Data</button>
+  </section>
+</div>
+<script>
+const adsToggle=document.getElementById("adsToggle");
+const adsStatus=document.getElementById("adsStatus");
+function updateAdSetting(s){
+  localStorage.setItem("adsEnabled",s);
+  adsStatus.textContent=s?"ads are on.":"ads are off.";
+  alert(`ads are now ${s?"on":"off"}.\nshould work now`);
+}
+window.addEventListener("load",()=>{
+  const e=localStorage.getItem("adsEnabled");
+  const s=e===null?true:e==="true";
+  adsToggle.checked=s;
+  adsStatus.textContent=s?"ads are on.":"ads are off.";
+});
+adsToggle.addEventListener("change",()=>{updateAdSetting(adsToggle.checked);});
+
+function openIframe(){
+  const w=window.open("about:blank");
+  if(!w){alert("blocked");return;}
+  const d=w.document;
+  d.documentElement.style.margin="0";
+  d.documentElement.style.padding="0";
+  d.body.style.margin="0";
+  d.body.style.padding="0";
+  d.body.style.height="100%";
+  d.body.style.overflow="hidden";
+  const f=d.createElement("iframe");
+  f.src=window.location.href;
+  f.style.width="100vw";
+  f.style.height="100vh";
+  f.style.border="none";
+  d.body.appendChild(f);
+}
+document.getElementById("openblankbtn").addEventListener("click",openIframe);
+
+async function exportData(format="save"){
+  const cookies=document.cookie.split("; ").reduce((a,c)=>{
+    const [n,v]=c.split("=");
+    a[n]=v;
+    return a;
+  },{});
+  const ls={};
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    ls[k]=localStorage.getItem(k);
+  }
+  const ss={};
+  for(let i=0;i<sessionStorage.length;i++){
+    const k=sessionStorage.key(i);
+    ss[k]=sessionStorage.getItem(k);
+  }
+  const cachesData={};
+  if("caches"in window){
+    const names=await caches.keys();
+    for(const n of names){
+      const c=await caches.open(n);
+      const r=await c.keys();
+      cachesData[n]=r.map(e=>e.url);
+    }
+  }
+  const data={
+    exportedAt:new Date().toISOString(),
+    userAgent:navigator.userAgent,
+    cookies,
+    localStorage:ls,
+    sessionStorage:ss,
+    caches:cachesData
+  };
+  const json=JSON.stringify(data,null,2);
+  let mime="application/json";
+  let ext=format.replace(".","").toLowerCase();
+  if(ext==="data")mime="application/octet-stream";
+  if(ext==="save")mime="application/x-game-save";
+  const blob=new Blob([json],{type:mime});
+  const link=document.createElement("a");
+  const date=new Date().toISOString().slice(0,10);
+  link.href=URL.createObjectURL(blob);
+  link.download=`truffled_backup_${date}.${ext}`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  alert(`Data exported as .${ext}`);
+}
+
+function importData(){
+  const input=document.createElement("input");
+  input.type="file";
+  input.accept=".save,.json,.data";
+  input.onchange=async e=>{
+    const f=e.target.files[0];
+    if(!f)return;
+    const r=new FileReader();
+    r.onload=async ev=>{
+      try{
+        const d=JSON.parse(ev.target.result);
+        Object.entries(d.cookies||{}).forEach(([n,v])=>{
+          document.cookie=`${n}=${v}; path=/;`;
+        });
+        Object.entries(d.localStorage||{}).forEach(([k,v])=>{
+          localStorage.setItem(k,v);
+        });
+        Object.entries(d.sessionStorage||{}).forEach(([k,v])=>{
+          sessionStorage.setItem(k,v);
+        });
+        alert("import vaild!");
+        setTimeout(()=>location.reload(),1000);
+      }catch(err){
+        alert("corrupted file");
+      }
+    };
+    r.readAsText(f);
+  };
+  input.click();
+}
+
+</script>
+
+<!--<script src="/js/themes.js"></script>-->
+<script src="/js/right.js"></script>
+<script src="/js/panic.js"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=WLTG1S4STB"></script>
+</body>
+</html>

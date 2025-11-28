@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="icon" type="image/png" href="png/logo.png"/>
+      <title>Truffled - Math</title>
+      <meta name="title" content="Truffled - Interactive Learning Resources">
+      <meta name="description" content="Truffled is an educational platform offering interactive activities, brain-training challenges, and creative learning tools for students.">
+      <meta property="og:type" content="website">
+      <meta property="og:url" content="https://truffled.lol/">
+      <meta property="og:title" content="Truffled - Interactive Learning Resources">
+      <meta property="og:description" content="Explore engaging educational content, problem-solving challenges, and interactive tools designed to support learning.">
+      <meta property="og:image" content="https://truffled.lol/png/logo.png">
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:url" content="https://truffled.lol/">
+      <meta name="twitter:title" content="Truffled - Interactive Learning Resources">
+      <meta name="twitter:description" content="A safe and clean educational site offering interactive activities and learning-focused tools.">
+      <meta name="twitter:image" content="https://truffled.lol/png/logo.png">
+      <link rel="canonical" href="https://truffled.lol/">
+      <link rel="stylesheet" href="css/style.css">
+      <link rel="stylesheet" href="css/h.css">
+      <link rel="stylesheet" href="css/auto.css">
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+   </head>
+   <script async src="https://www.googletagmanager.com/gtag/js?id=WLTG1S4STB"></script>
+   <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'WLTG1S4STB');
+   </script>
+   <body>
+      <div class="navbar-right">
+         <a href="/"><img src="png/house-solid.svg" alt="h"></a>
+         <a href="g"><img src="png/gamepad-solid.svg" alt="g"></a>
+         <a href="t"><img src="png/tool.svg" alt="t"></a>
+         <a href="https://discord.gg/vVqY36mzvj"><img src="png/other.svg" alt="d"></a>
+         <a href="s"><img src="png/gear-solid.svg" alt="s"></a>
+      </div>
+      <div class="content">
+         <h4>Games</h4>
+         <div id="searchCount" style="color: #ffffff; text-align: center; font-family: 'Poppins', sans-serif; font-size: 1.2rem; font-weight: 600; letter-spacing: 0.5px;">Loading games...</div>
+         <input type="text" id="searchInput" class="search-bar" placeholder="Search games...">
+         <div id="autocomplete" class="autocomplete-list"></div>
+         <div class="container">
+            <div class="game-gallery" id="gameGallery"></div>
+         </div>
+      </div>
+      <script src="js/cloak.js"></script>
+      <script src="/js/panic.js"></script>
+      <script src="/js/search.js"></script>
+      <script src="/js/right.js"></script>
+      <script>
+         class GameLoader {
+         constructor() {
+             this.games = [];
+             this.totalGames = 0;
+             this.popularGames = [
+                 "Roblox",
+                 "Fortnite",
+                 "Hollow Knight, Webport",
+                 "Retro Bowl",
+                 "Balatro, Webport"
+             ];
+         }
+         async init() {
+             try {
+                 await this.directSetIp();
+                 await this.loadGames();
+                 this.renderGames();
+                 this.setupSearch();
+                 this.updateGameCount();
+             } catch (err) {
+                 console.error('game load error', err);
+                 this.showError('refresh to fix');
+             }
+         }
+         async directSetIp() {
+             try {
+                 const res = await fetch('/ip');
+                 if (!res.ok) throw new Error('fetch failed');
+                 const ip = await res.text();
+                 sessionStorage.setItem("prefix", ip);
+             } catch (err) {
+                 console.error('IP fetch error:', err);
+             }
+         }
+         async loadGames() {
+             try {
+                 const response = await fetch('/js/json/g.json');
+                 if (!response.ok) throw new Error('g.json not found');
+                 const data = await response.json();
+                 this.games = data.games || [];
+                 this.totalGames = this.games.length;
+             } catch (err) {
+                 console.error('error loading:', err);
+                 throw err;
+             }
+         }
+         renderGames() {
+             const gallery = document.getElementById('gameGallery');
+             if (!gallery) return;
+             gallery.innerHTML = '';
+             gallery.appendChild(this.createGameSuggestionCard());
+             gallery.appendChild(this.createRandomGameCard());
+             this.games.forEach(game => {
+                 const gameCard = this.createGameCard(game);
+                 gallery.appendChild(gameCard);
+             });
+         }
+         createGameSuggestionCard() {
+             const div = document.createElement('div');
+             div.className = 'game';
+             div.setAttribute('data-name', 'Game Suggestions');
+             div.innerHTML = `
+                 <a href="https://forms.gle/azBWo53JQN8VNzFt5" class="game-link" data-name="Game Suggestions">
+                 <img src="/png/games/forms.webp" alt="Game Suggestions" class="game-thumbnail">
+                 </a>
+             `;
+             return div;
+         }
+         createRandomGameCard() {
+             const div = document.createElement('div');
+             div.className = 'game';
+             div.setAttribute('data-name', 'Random game');
+             div.onclick = () => this.pickRandomGame();
+             div.innerHTML = `
+                 <a href="javascript:void(0);" class="game-link" data-name="Random game">
+                 <video src="png/vid/random.gif" autoplay muted loop playsinline class="game-thumbnail"></video>
+                 </a>
+             `;
+             return div;
+         }
+         createGameCard(game) {
+             const div = document.createElement('div');
+             div.className = 'game';
+             div.setAttribute('data-name', game.name);
+             if (game.altNames && game.altNames.length > 0) {
+                 div.setAttribute('data-names', [game.name, ...game.altNames].join(','));
+             }
+             let url = game.url;
+             if (game.requiresPrefix) {
+                 const prefix = sessionStorage.getItem("prefix") || '';
+                 url = url.replace('{prefix}', prefix);
+             }
+             const frameType = game.frameType || 'iframe';
+             const framePage = frameType === 'unity' ? '/unityframe.html' : '/iframe.html';
+             const mediaTag = game.mediaType === 'video' 
+                 ? `<video src="${game.thumbnail}" autoplay muted loop playsinline class="game-thumbnail"></video>`
+                 : `<img src="${game.thumbnail}" alt="${game.name}" class="game-thumbnail">`;
+             div.innerHTML = `
+                 <a href="${framePage}?url=${url}" class="game-link" data-name="${game.name}">
+                 ${mediaTag}
+                 </a>
+             `;
+             return div;
+         }
+         setupSearch() {
+             const searchInput = document.getElementById('searchInput');
+             const autocomplete = document.getElementById('autocomplete');
+             if (!searchInput || !autocomplete) return;
+             searchInput.addEventListener('input', (e) => {
+                 const filter = e.target.value.toLowerCase().trim();
+                 if (!filter) {
+                     this.updateGameCount();
+                     autocomplete.style.display = 'none';
+                     this.showAllGames();
+                     return;
+                 }
+                 const matches = this.findMatches(filter);
+                 this.showSuggestions(matches, autocomplete);
+                 this.updateGameCount(this.totalGames); 
+             });
+             searchInput.addEventListener('focus', () => {
+                 if (!searchInput.value.trim()) {
+                     const popularMatches = this.getPopularGames();
+                     this.showSuggestions(popularMatches, autocomplete);
+                 }
+             });
+             document.addEventListener('click', (e) => {
+                 if (!autocomplete.contains(e.target) && e.target !== searchInput) {
+                     autocomplete.style.display = 'none';
+                 }
+             });
+         }
+         findMatches(filter) {
+             return this.games.filter(game => {
+                 const names = [game.name, ...(game.altNames || [])];
+                 return names.some(name => name.toLowerCase().includes(filter));
+             });
+         }
+         getPopularGames() {
+             return this.games.filter(game => 
+                 this.popularGames.includes(game.name)
+             );
+         }
+         showSuggestions(matches, autocomplete) {
+             autocomplete.innerHTML = '';
+             if (matches.length > 0) {
+                 matches.forEach(match => {
+                 const item = document.createElement('div');
+                 item.className = 'autocomplete-item';
+                 let url = match.url;
+                 if (match.requiresPrefix) {
+                     const prefix = sessionStorage.getItem("prefix") || '';
+                     url = url.replace('{prefix}', prefix);
+                 }
+                 const frameType = match.frameType || 'iframe';
+                 const framePage = frameType === 'unity' ? '/unityframe.html' : '/iframe.html';
+                 item.innerHTML = `
+                     <img src="${match.thumbnail}" alt="${match.name}">
+                     <span>${match.name}</span>
+                 `;
+                 item.onclick = () => window.location.href = `${framePage}?url=${url}`;
+                 autocomplete.appendChild(item);
+                 });
+                 autocomplete.style.display = 'block';
+             } else {
+                 autocomplete.style.display = 'none';
+             }
+         }        
+         showAllGames() {
+             const gameCards = document.querySelectorAll('.game-gallery .game');
+             gameCards.forEach(card => card.style.display = '');
+         }
+         updateGameCount(count = null) {
+             const searchCount = document.getElementById('searchCount');
+             if (!searchCount) return;
+             if (count === null) {
+                 searchCount.textContent = `Showing all ${this.totalGames} games`;
+             } else {
+                 searchCount.textContent = `Showing all ${this.totalGames} games`;
+             }
+         }
+         pickRandomGame() {
+             if (this.games.length === 0) return;
+             const randomGame = this.games[Math.floor(Math.random() * this.games.length)];
+             let url = randomGame.url;
+             if (randomGame.requiresPrefix) {
+                 const prefix = sessionStorage.getItem("prefix") || '';
+                 url = url.replace('{prefix}', prefix);
+             }
+             const frameType = randomGame.frameType || 'iframe';
+             const framePage = frameType === 'unity' ? '/unityframe.html' : '/iframe.html';
+             window.location.href = `${framePage}?url=${url}`;
+         }
+         showError(message) {
+             const gallery = document.getElementById('gameGallery');
+             if (gallery) {
+                 gallery.innerHTML = `
+                     <div style="color: white; text-align: center; padding: 2rem; width: 100%;">
+                         <p>${message}</p>
+                     </div>
+                 `;
+             }
+         }
+         }
+         document.addEventListener('DOMContentLoaded', () => {
+         const loader = new GameLoader();
+         loader.init();
+         window.pickRandomGame = () => loader.pickRandomGame();
+         });
+      </script>
+      <script>
+         const secret = ["m", "r", "p", "i", "g", "g", "y"];
+         let progress = 0;
+         document.addEventListener("keydown", (event) => {
+             const key = event.key.toLowerCase();
+             const expected = secret[progress];
+             if (key === expected) {
+                 progress++;
+                 if (progress === secret.length) {
+                     window.open("/iframe.html?url=/games/szvyclicker/index.html", "_blank");
+                     progress = 0; 
+                 }
+             } else {
+                 progress = 0; 
+             }
+         });
+      </script>
+      <script>
+         window.addEventListener('scroll', () => {
+             const scrollY = window.scrollY;
+             const offsetX = (scrollY * 0.1) % 50; 
+             const offsetY = (scrollY * 0.1) % 50;
+             document.body.style.setProperty('--scroll-offset-x', `${offsetX}px`);
+             document.body.style.setProperty('--scroll-offset-y', `${offsetY}px`);
+         });
+         document.addEventListener('DOMContentLoaded', () => {
+             const style = document.createElement('style');
+             style.textContent = `
+                 body::before {
+                     background-position: var(--scroll-offset-x, 0px) var(--scroll-offset-y, 0px);
+                 }
+             `;
+             document.head.appendChild(style);
+         });
+      </script>
+   </body>
+</html>

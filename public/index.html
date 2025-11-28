@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="png/logo.png" />
+    <title>Truffled - Education</title>
+    <meta charset="UTF-8">
+    <meta name="title" content="Truffled - Interactive Learning Resources">
+    <meta name="description" content="Truffled is an educational platform offering interactive activities, brain-training challenges, and creative learning tools for students.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://truffled.lol/">
+    <meta property="og:title" content="Truffled - Interactive Learning Resources">
+    <meta property="og:description" content="Explore engaging educational content, problem-solving challenges, and interactive tools designed to support learning.">
+    <meta property="og:image" content="https://truffled.lol/png/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://truffled.lol/">
+    <meta name="twitter:title" content="Truffled - Interactive Learning Resources">
+    <meta name="twitter:description" content="A safe and clean educational site offering interactive activities and learning-focused tools.">
+    <meta name="twitter:image" content="https://truffled.lol/png/logo.png">
+    <link rel="canonical" href="https://truffled.lol/">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/edu.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://atugatran.github.io/FontAwesome6Pro/css/all.min.css" />
+   </head>
+   <script>
+      document.addEventListener("keydown", function(event) {
+        if (event.key === "`") {
+          window.location.href = "/extra/szvy.png";
+        }
+      });
+   </script>
+   <body class="index-page">
+      <div id="seo-content" aria-hidden="true">
+        <div class="school-nav">
+          <h2 class="logo">Truffled</h2>
+        </div>
+        
+        <div class="hero-section">
+          <h1>One secure place for all your learning</h1>
+          <p class="tagline">Connecting students and teachers to the educational resources they need</p>
+          <span class="cta-button">Get Started</span>
+        </div>
+        
+        <div class="main-content">
+          <p class="intro-text">Truffled is a comprehensive education platform trusted by students, teachers, and schools nationwide. Access all your courses, study materials, and learning tools in one secure, easy-to-use platform.</p>
+          
+          <div class="features-grid">
+            <section>
+              <h2>Academic Subjects</h2>
+              <p>Mathematics, Science, English, History, Literature, Writing, Reading, Social Studies, Geography, Biology, Chemistry, Physics, Algebra, Geometry, Calculus, Statistics, Computer Science, Programming, Foreign Languages, Art, Music</p>
+            </section>
+            
+            <section>
+              <h2>Educational Services</h2>
+              <p>Online courses, college credit, exam preparation, test prep, tutoring, homework help, study guides, practice tests, educational videos, interactive lessons, learning resources, curriculum development, academic support, student success</p>
+            </section>
+            
+            <section>
+              <h2>All Student Levels</h2>
+              <p>K-12 education, elementary school, middle school, high school, college, university, graduate school, continuing education, adult learning, professional development, certification programs, degree programs, homeschool education</p>
+            </section>
+            
+            <section>
+              <h2>Test Preparation</h2>
+              <p>SAT prep, ACT prep, GRE prep, GMAT prep, LSAT prep, MCAT prep, AP courses, Advanced Placement, standardized tests, college entrance exams, professional certification exams, state assessments, final exams, midterms</p>
+            </section>
+            
+            <section>
+              <h3>Learning Methods</h3>
+              <p>Interactive learning, video lessons, practice quizzes, flashcards, study notes, educational games, adaptive learning, personalized education, self-paced learning, collaborative learning, project-based learning, STEM education, critical thinking, problem solving</p>
+            </section>
+          </div>
+          
+          <div class="trust-section">
+            <h3>Trusted by schools nationwide</h3>
+            <p>Join thousands of students and educators using Truffled to power digital learning</p>
+          </div>
+        </div>
+        
+        <div class="school-footer">
+          <p>© 2024 Truffled • Empowering education through technology</p>
+        </div>
+      </div>
+      
+      <div class="custom-cursor"></div>
+      <div class="navbar-right">
+          <a href="/"><img src="png/house-solid.svg" alt="h"></a>
+          <a href="g"><img src="png/gamepad-solid.svg" alt="g"></a>
+          <a href="t"><img src="png/tool.svg" alt="t"></a>
+          <a href="https://discord.gg/vVqY36mzvj"><img src="png/other.svg" alt="d"></a>
+          <a href="s"><img src="png/gear-solid.svg" alt="s"></a>
+      </div>
+      <div class="content">
+         <h1>Welcome to Truffled</h1>
+         <form id="uv-form" style="display: flex; flex-direction: column;">
+            <input id="search-engine" value="https://duckduckgo.com/?t=h_&ia=web&q=%s" type="hidden" />
+            <input id="uv-address" type="text" placeholder="Search Google or type an URL" class="form__input" />
+            <div id="random-text" style="font-size: 0.9em; color: gray;"></div>
+         </form>
+         <div class="desc left-margin">
+            <p id="uv-error"></p>
+            <pre id="uv-error-code"></pre>
+         </div>
+         <script>
+          const form = document.querySelector("#uv-form");
+          const input = document.querySelector("#uv-address");
+          console.log(form)
+          console.log(input)
+          document.addEventListener("DOMContentLoaded", function () {
+          form.addEventListener("submit", async (event) => {
+          console.log('hi')
+          event.preventDefault();
+          window.navigator.serviceWorker
+          .register("/active/sw.js", {
+            scope: __uv$config.prefix,
+          })
+          .then(() => {
+            let url = input.value.trim();
+            if (!isUrl(url)) url = "https://duckduckgo.com/?t=h_&ia=web&q=" + url;
+            else if (!(url.startsWith("https://") || url.startsWith("http://")))
+              url = "http://" + url;
+            sessionStorage.setItem("encodedUrl", __uv$config.encodeUrl(url));
+            location.href = "search.html";
+          });
+      });
+    });
+    function isUrl(val = "") {
+      if (
+        /^http(s?):\/\//.test(val) ||
+        (val.includes(".") && val.slice(0, 1) !== " ")
+      )
+        return true;
+      return false;
+    }
+            const texts = [
+              "Games with your Desire!", "auk.cc on tiktok", "the nether...", "Gatekeep this at all cost",
+              "im a bun im a bun", "Join the discord for more links", "mttg in the works", "linux > macos",
+              "king lebron...", "I need money, cashapp: $pumpedkidd", "Chickenbutt", "mario pleaseeeeeee",
+              "reeeeee boiiiiiiii lol moment", "mexi has a good site", "tyler is the best artist",
+              "i all i want to do is mehhhhhhhhhh", "sealie wants my milkshakes -frogie1", "i am BIGCHUNGUS BOIIII",
+              "i have 32.14$ on adsterra 5/8/25", "highschool scares me", "nah nah nah call me daddy",
+              "gurt: sybau", "teto, miku, neru", "gamprodev🥷", "hawk1: you wanna say something?",
+              "hawk2: uhhhhhhhhhh", "my school hates me", "dab on the haters", "the f students, there my inventors",
+              "nickolas", "greyson mess fanclub", "There's a sun around the bend.", "iis2 > nightly manor",
+              "20200229 2", "who tryna go to 165 S Main St #100b, Harrisonburg, VA 22801",
+              "shout out to corbin. rip him cuz dmca", "shape world", "frogies sybersecurity class",
+              "eagler craft server soon", "complex.lat", "grigger from limbus company", "BABY SHLAWNG",
+              "npm run fart", "41 minutes", "67 mango st", "windhawk is fireeeee", "porting games is my passion",
+              "the gazebo family", "nick playing in recess", "play bogs niche items on rbx",
+              "can you translate that for me mexi?", "scooby doo pa pa", "bro can we just exile this:",
+              "profile system was a hell to make.", "w faps?", "l faps?", "trash faps?", "illegal faps?",
+              "amazing faps?", "steamrip my goat <333", "when theres rain, theres thunder...",
+              "los pollos is ass at fort 🤣", "bocchi the rock firee", "cs2 bhop back baby <33",
+              "effoc", "barber shop", "steven here", "MEOWL", "truman show", "MEOWL", "MEOWL", "MEOWL", "MEOWL",
+              "toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma toma ",
+              "you need to NERD OUT", "labubu?", "yall have a good night", "zack is a piggy", "OINK OINK OINK OINK OINK OINK", "jobi :eyes:", "AYE WASSUP COOKIE. calm down g",
+              "gucci bucket gucci bucket", "What??? is this even possible???????????", "eunoia is a CLANKER",
+              "ref do something","peterbot word", "bonnie", "indian nick", 
+              "i wrap it like a jolly rancher","https://discord.gg/CDd8BFcyWW","people will call me a skid, js say my site is bad.", "i love mac demarco"
+            ];
+            const selected = texts[Math.floor(Math.random() * texts.length)];
+            const container = document.getElementById("random-text");
+            container.innerHTML = "";
+            const textNode = document.createElement("span");
+            textNode.textContent = selected;
+            container.appendChild(textNode);
+            if (selected === "mario pleaseeeeeee") {
+              const img = document.createElement("img");
+              img.src = "/extra/mario.png";
+              img.alt = "pleaseeeeeee";
+              img.style.display = "block";
+              img.style.marginTop = "10px";
+              img.style.height = "200px";
+              img.onerror = () => {
+                alert("Image not found at /extra/mario.png — check your file path.");
+              };
+              container.appendChild(img);
+            }
+         </script>
+      </div>
+      <script src="/active/uv.bundle.js" charset="UTF-8" defer></script>
+      <script src="/active/uv.config.js" charset="UTF-8" defer></script>
+      <script src="/js/panic.js"></script>
+      <script src="/js/right.js"></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=WLTG1S4STB"></script>
+      <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'WLTG1S4STB');
+      </script>
+      <script>
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const seoContent = document.getElementById('seo-content');
+          if (seoContent) {
+            seoContent.style.display = 'none';
+          }
+        }, 1);
+      });
+      </script>
+   </body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui, shrink-to-fit=yes">
+   <title>Truffled - Grades</title>
+   <link href="/css/style.css" rel="stylesheet" type="text/css" />
+   <link rel="manifest" href="manifest.json"/>
+   <link rel="icon" href="/png/logo.png">
+   <meta name="description" content="Educational resources and online learning">
+   <script src="/js/frame.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+   <script async src="https://www.googletagmanager.com/gtag/js?id=WLTG1S4STB"></script>
+   <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'WLTG1S4STB');
+   </script>
+</head>
+<body>
+   <div id="loadingbar"></div>
+      <div id="historyModal" onclick="if(event.target === this) hideHistory()">
+      <div id="historyContent">
+         <div id="historyHeader">
+            <h2>Browsing History</h2>
+            <div id="historyActions">
+               <button id="clearHistoryBtn" onclick="clearHistory()">Clear All</button>
+               <button id="closeHistoryBtn" onclick="hideHistory()">Close</button>
+            </div>
+         </div>
+         <div id="historyList"></div>
+      </div>
+   </div>
+   <div id="historyPasswordModal">
+      <div id="historyPasswordBox">
+         <h3>Enter Password</h3>
+         <input id="historyPasswordInput" type="password" placeholder="password...">
+         <p id="historyPasswordMessage"></p>
+         <div class="passwordButtons">
+            <button id="historyPasswordConfirmBtn">Confirm</button>
+            <button id="historyPasswordCancelBtn">Cancel</button>
+         </div>
+      </div>
+   </div>
+   <div id="gooei">
+      <form id="uv-form">
+         <input id="teacher-snitching-engine" value="https://duckduckgo.com/?t=h_&q=" type="hidden"/> 
+         <input id="teacher-setup-dialogs-container-searchbar" type="text" placeholder="Search anything..." autocomplete="off"/>
+      </form>
+   </div>
+   <iframe src="" id="iframeid" allowfullscreen></iframe>
+   <div id="footer">
+      <img class="logo" src="/png/logo.png" onclick="window.location.href='/'" alt="Home" title="Home">
+      <input id="teacher-setup-dialogs-container" type="text" placeholder="Search anything..." autocomplete="off"/>
+      <div class="right">
+         <img class="headericons" src="/png/back.svg" onclick="goback()" alt="Back" title="Back">
+         <img class="headericons" src="/png/forward.svg" onclick="rotatetozone()" alt="Forward" title="Forward">
+         <img class="headericons" src="/png/refresh.svg" onclick="fn_reload()" alt="Refresh" title="Refresh">
+         <img class="headericons" src="/png/history.svg" onclick="showHistory()" alt="History" title="History">
+         <img class="headericons" src="/png/code.svg" onclick="toggleEruda()" alt="Inspect" title="Inspect Element">
+      </div>
+   </div>
+   <script src="/active/uv.bundle.js" defer></script>
+   <script src="/active/uv.config.js" defer></script>
+   <script src="/js/history.js"></script>
+   <script>
+      const iframe = document.getElementById('iframeid');
+      const searchInputFooter = document.getElementById('teacher-setup-dialogs-container');
+      const searchBox = document.getElementById("gooei");
+      const searchInputBox = document.getElementById("teacher-setup-dialogs-container-searchbar");
+      const loadingBar = document.getElementById("loadingbar");
+      let lastURL = '';
+      let isErudaLoaded = false;
+      const ADULT_KEYWORDS = [
+         "porn", "pornography", "xxx", "adult", "18+", "21+", "sex", "sexual", 
+         "nudes", "nude", "naked", "topless", "r34", "rule34", "bdsm", "hentai", 
+         "incest", "milf", "daddy", "mommy", "cum", "ejaculate", "masturbation", 
+         "cock", "pussy", "dildo", "vibrator", "blowjob", "anal"
+      ];
+      function isUrl(val = "") {
+         return /^https?:\/\//i.test(val) || (val.includes(".") && val.slice(0, 1) !== " ");
+      }
+      
+      function containsAdultContent(url) {
+         const lowerUrl = url.toLowerCase();
+         return ADULT_KEYWORDS.some(keyword => lowerUrl.includes(keyword));
+      }
+      function fn_reload() {
+         try {
+            iframe.contentWindow.location.reload();
+         } catch (e) {
+            console.error('Failed to reload iframe:', e);
+         }
+      }
+      function goback() {
+         try {
+            iframe.contentWindow.history.back();
+         } catch (e) {
+            console.error('Failed to go back:', e);
+         }
+      }
+      function rotatetozone() {
+         try {
+            iframe.contentWindow.history.forward();
+         } catch (e) {
+            console.error('Failed to go forward:', e);
+         }
+      }
+            
+      function toggleEruda() {
+         try {
+            const iframeWindow = iframe.contentWindow;
+            
+            if (isErudaLoaded && iframeWindow.eruda) {
+               iframeWindow.eruda.destroy();
+               isErudaLoaded = false;
+            } else {
+               const erudaScript = iframeWindow.document.createElement('script');
+               erudaScript.src = "https://cdn.jsdelivr.net/npm/eruda";
+               erudaScript.onload = () => {
+                  if (iframeWindow.eruda) {
+                     iframeWindow.eruda.init({ 
+                        tool: ['console', 'elements', 'network', 'resources', 'info'] 
+                     });
+                     iframeWindow.eruda.show();
+                     isErudaLoaded = true;
+                  }
+               };
+               iframeWindow.document.head.appendChild(erudaScript);
+            }
+         } catch (e) {
+            alert("DevTools can only load after the page is fully loaded.");
+            console.error('Eruda toggle error:', e);
+         }
+      }
+            function loadNewPage(url) {
+         if (!url) return;
+                  if (searchInputBox) searchInputBox.blur();
+                  if (containsAdultContent(url)) {
+            alert("Content blocked: Inappropriate content detected.");
+            url = "/extra/reallydude.html";
+            iframe.src = url;
+            updateSearchBars(url);
+            return;
+         }
+                  if (!isUrl(url)) {
+            url = "https://duckduckgo.com/?t=h_&q=" + encodeURIComponent(url);
+         } else if (!/^https?:\/\//i.test(url)) {
+            url = "https://" + url;
+         }
+                  iframe.src = url;
+         updateSearchBars(url);
+                  showLoadingBar();
+      }
+    function updateSearchBars(url) {
+         searchInputFooter.value = url;
+         searchInputBox.value = url;
+      }
+            function showLoadingBar() {
+         loadingBar.style.width = "10%";
+         loadingBar.style.opacity = "1";
+      }
+      function hideLoadingBar() {
+         loadingBar.style.width = "100%";
+         setTimeout(() => {
+            loadingBar.style.opacity = "0";
+            loadingBar.style.width = "0";
+         }, 300);
+      }
+            function checkIframeURL() {
+         try {
+            const currentURL = iframe.contentWindow.location.href;
+            if (currentURL !== lastURL) {
+               lastURL = currentURL;
+                              const websitePath = currentURL
+                  .replace(window.location.origin, "")
+                  .replace("/active/go/", "");
+               
+               localStorage.setItem("decoded", websitePath);
+                              if (typeof Ultraviolet !== 'undefined' && Ultraviolet.codec) {
+                  const decodedValue = Ultraviolet.codec.xor.decode(websitePath);
+                  updateSearchBars(decodedValue);
+                                    if (decodedValue !== "a`owt8bnalk") {
+                     addToHistory(decodedValue);
+                  }
+               } else {
+                  updateSearchBars(currentURL);
+               }
+                              isErudaLoaded = false;
+            }
+         } catch (e) {
+         }
+      }
+            function showSearchBox() {
+         searchInputBox.value = searchInputFooter.value;
+         searchBox.style.opacity = "1";
+         searchBox.style.visibility = "visible";
+         setTimeout(() => searchInputBox.focus(), 50);
+      }
+      function hideSearchBox() {
+         searchBox.style.opacity = "0";
+         searchBox.style.visibility = "hidden";
+      }
+            searchInputFooter.addEventListener('mousedown', (e) => {
+         e.preventDefault();
+         e.stopPropagation();
+         showSearchBox();
+      });
+      searchInputFooter.addEventListener('keydown', (e) => {
+         if (e.key === 'Enter') {
+            e.preventDefault();
+            loadNewPage(searchInputFooter.value.trim());
+         }
+      });
+      searchInputBox.addEventListener('keydown', (e) => {
+         if (e.key === 'Enter') {
+            e.preventDefault();
+            loadNewPage(searchInputBox.value.trim());
+            hideSearchBox();
+         } else if (e.key === 'Escape') {
+            hideSearchBox();
+         }
+      });
+            document.addEventListener('click', (e) => {
+         if (!searchBox.contains(e.target) && e.target !== searchInputFooter) {
+            hideSearchBox();
+         }
+      });
+            iframe.addEventListener('load', () => {
+         hideLoadingBar();
+      });
+            setInterval(checkIframeURL, 100);
+   </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="https://cdn.jsdelivr.net/gh/aukak/hlm/">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>HOTLINE MIAMI</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=WLTG1S4STB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'WLTG1S4STB');
+</script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        @keyframes flicker {
+            0% { opacity: 0.15; }
+            50% { opacity: 0.20; }
+            100% { opacity: 0.15; }
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: 'Press Start 2P', monospace; 
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #ff0080, #00ffe5); 
+            mix-blend-mode: screen; 
+            opacity: 0.15;
+            animation: flicker 1s infinite steps(2);
+            z-index: 0;
+        }
+
+        canvas {
+            display: block;
+            image-rendering: pixelated; 
+            z-index: 1;
+            position: relative;
+        }
+
+        #credits {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            font-size: 24px;
+            color: #00ffe5;
+            text-shadow: 1px 1px #ff0080; 
+            user-select: none;
+            pointer-events: none;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    
+    <script>
+        const BLOCKED_ENDPOINTS = [
+            "steamon", "achievements.dat", "mask.tmp", "surfaces", 
+            "steamoff", "skip", "restartmusic", "xbox", "volume.dat", 
+            "keyboard.dat", "blood", "alienware"
+        ];
+        
+        const originalFetch = window.fetch;
+        window.fetch = function(resource, options) {
+            const url = typeof resource === 'string' ? resource : resource.url;
+            const shouldBlock = BLOCKED_ENDPOINTS.some(endpoint => url.endsWith(endpoint));
+
+            if (shouldBlock) {
+                return Promise.resolve(new Response("Not Found", { status: 404 }));
+            }
+            return originalFetch(resource, options);
+        };
+                window.onload = () => {
+            if (typeof GameMaker_Init === "function") {
+                GameMaker_Init();
+            }
+        };
+    </script>
+    
+    <div class="gm4html5_div_class">
+        <canvas id="canvas" width="1920" height="1080">
+            <p>Your browser doesn't support HTML5 canvas.</p>
+        </canvas>
+    </div>
+
+<div id="credits" data-credit="truffled-98c">
+    port by 98corbins — truffled.lol
+</div>
+
+    <script type="text/javascript" src="html5game/HotlineMiami.js"></script>
+
+</body>
+</html>
